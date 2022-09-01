@@ -6,12 +6,25 @@ if($_SERVER['REQUEST_METHOD']=="POST")
 {
     $user_name=$_POST['user_name'];
     $password=$_POST['password'];
+    
     if(!empty($user_name) && !empty($password) && !is_numeric($user_name))
     {
-         $user_id=random_num(20);
-         
-         $query="insert into users(user_id,user_name,password) values('$user_id','$user_name','$password')";
-         mysqli_query($con,$query);
+        $user_id=random_num(20);
+        //  $select="select * from users where user_name='$user_name'";
+        $check=mysqli_query($con,"select * from users where user_name='$user_name'");
+        if(mysqli_num_rows($check) > 0)
+        {
+
+            $error[] = 'user already exist!';
+            
+
+            
+      
+         }
+         else{
+            $query="insert into users(user_id,user_name,password) values('$user_id','$user_name','$password')";
+             mysqli_query($con,$query);
+         }
          header("Location: login.php");
          die;
     }else
@@ -85,10 +98,20 @@ if($_SERVER['REQUEST_METHOD']=="POST")
     </style>
     <div id="box" >
         <form action="#" method="post" >
+
             <div style="font-size:20px;margin: 10px;color:#183a1d">Signup</div>
             <input id="text" type="text" placeholder="Username"name="user_name" required><br><br>
             <input id="text"type="password" class="pass"placeholder="Password" name="password" required><br><br>
-            <input id="button"type="submit" value="Signup"><br><br>
+            <input name="submit" id="button"type="submit" value="Signup"><br><br>
+            <?php
+                if(isset($error))
+                {
+                    foreach($error as $error)
+                        {
+                            echo '<span class="error-msg">'.$error.'</span>';
+                        };
+                };
+            ?>
             <span>Already a member ?   </span>
             <a href="login.php">Click to Login</a><br><br>
         </form>
